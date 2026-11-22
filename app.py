@@ -316,6 +316,7 @@ HOME_TEMPLATE = """<!DOCTYPE html>
                 <span class="tag">Docker</span>
                 <span class="tag">GitHub Actions</span>
                 <span class="tag">Render Cloud</span>
+                <span class="tag">AWS Cloud</span>
             </div>
         </div>
 
