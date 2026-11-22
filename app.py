@@ -317,6 +317,7 @@ HOME_TEMPLATE = """<!DOCTYPE html>
                 <span class="tag">GitHub Actions</span>
                 <span class="tag">Render Cloud</span>
                 <span class="tag">AWS Cloud</span>
+                <span class="tag">This is Mohit 1st project on CI/CD</span>
             </div>
         </div>
 
