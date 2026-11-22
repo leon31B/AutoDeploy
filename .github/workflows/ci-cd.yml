@@ -1,0 +1,93 @@
+name: AutoDeploy CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # =========================================================================
+  # CONTINUOUS INTEGRATION (CI)
+  # Runs on every push to main and all pull requests targeting main.
+  # Validates code quality, dependencies, and executes unit tests.
+  # =========================================================================
+  continuous-integration:
+    name: "CI: Test & Lint"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Stage 2: Checkout Code"
+        uses: actions/checkout@v4
+
+      - name: "Stage 3: Setup Python Environment"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: "Install Project Dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: "Stage 4: Automated Testing with Pytest"
+        run: |
+          pytest -v --tb=short
+
+  # =========================================================================
+  # CONTINUOUS DEPLOYMENT (CD)
+  # Only executes for successful pushes to the main branch after CI passes.
+  # Pull requests NEVER trigger this job.
+  # =========================================================================
+  continuous-deployment:
+    name: "CD: Docker Build & Render Deploy"
+    needs: [continuous-integration]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout Code"
+        uses: actions/checkout@v4
+
+      - name: "Set up Docker Buildx"
+        uses: docker/setup-buildx-action@v3
+
+      - name: "Stage 5: Validate Docker Image Build"
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: |
+            autodeploy:latest
+            autodeploy:${{ github.sha }}
+
+      - name: "Stage 6: Deploy to Render"
+        run: |
+          echo "=========================================================="
+          echo "Triggering Deployment to Render Cloud..."
+          echo "=========================================================="
+          if [ -n "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+            DEPLOY_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}")
+            HTTP_CODE=$(echo "$DEPLOY_RESPONSE" | tail -n1)
+            BODY=$(echo "$DEPLOY_RESPONSE" | sed '$d')
+            echo "Render Deploy Hook Response (HTTP $HTTP_CODE): $BODY"
+            if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+              echo "Deployment hook successfully accepted by Render."
+            else
+              echo "Deployment hook returned non-success HTTP status $HTTP_CODE."
+              exit 1
+            fi
+          else
+            echo "NOTICE: RENDER_DEPLOY_HOOK_URL secret is not configured yet."
+            echo "To enable automated deployment:"
+            echo "  1. Go to your Render Web Service dashboard"
+            echo "  2. Copy your 'Deploy Hook' URL"
+            echo "  3. Add it to GitHub Repo Settings -> Secrets and variables -> Actions as RENDER_DEPLOY_HOOK_URL"
+            echo "Skipping deploy trigger step gracefully."
+          fi

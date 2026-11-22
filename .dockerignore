@@ -1,0 +1,35 @@
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Git metadata
+.git/
+.gitignore
+.github/
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+tests/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment and secrets
+.env
+*.env
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# Documentation and project instructions
+*.md
+prompt.txt

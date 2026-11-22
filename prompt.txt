@@ -1,0 +1,361 @@
+# PROJECT: AUTODEPLOY
+## Automated CI/CD Pipeline with GitHub Actions, Docker & Render
+
+### 1. ROLE AND OBJECTIVE
+
+Act as a Senior DevOps Engineer and Full-Stack Developer.
+
+Your task is to design and implement a beginner-friendly but professionally structured CI/CD project called **AutoDeploy**.
+
+Build a minimal web application and implement a complete automated CI/CD pipeline that demonstrates how modern software teams automate testing, containerization, and application deployment.
+
+This project must be:
+- Fully functional.
+- Easy to understand and maintain.
+- Professionally structured.
+- Suitable for demonstrating in technical interviews.
+- Implementable within approximately 2 hours.
+- Free or based on free-tier services wherever possible.
+
+IMPORTANT: Prioritize a working implementation over unnecessary features.
+
+---
+
+### 2. TECHNOLOGY STACK
+
+Use the following technologies:
+
+| Technology | Responsibility |
+|---|---|
+| Python | Primary programming language |
+| Flask | Backend web framework |
+| HTML/CSS | Minimal frontend |
+| Pytest | Automated testing |
+| Git | Version control |
+| GitHub | Source code repository |
+| GitHub Actions | CI/CD automation |
+| Docker | Application containerization |
+| Render | Cloud deployment |
+
+Do not introduce Kubernetes, Terraform, Jenkins, or complex cloud infrastructure.
+
+---
+
+### 3. APPLICATION DEVELOPMENT
+
+Develop a minimal Flask application with the following functionality:
+
+**A. Homepage**
+- Display the application name: AutoDeploy.
+- Show a clean and professional interface.
+- Display application status: Running.
+- Show a short description of the CI/CD pipeline.
+
+**B. Health Check API**
+
+Create an endpoint:
+
+GET /health
+
+Expected JSON response:
+
+{
+  "status": "healthy",
+  "application": "AutoDeploy"
+}
+
+**C. Application Information API**
+
+Create:
+
+GET /api/info
+
+Return basic application information in JSON format.
+
+Keep the application lightweight. Do not implement authentication, databases, or unnecessary CRUD functionality.
+
+---
+
+### 4. AUTOMATED TESTING
+
+Use Pytest to implement automated tests.
+
+Test the following:
+
+1. Homepage returns HTTP 200.
+2. Homepage contains the application name.
+3. Health endpoint returns HTTP 200.
+4. Health endpoint returns the expected JSON response.
+5. Application information endpoint returns valid JSON.
+
+Requirements:
+- Use Flask's test client.
+- Organize tests inside a dedicated tests directory.
+- Include meaningful test names.
+- Ensure tests can run locally using a single command.
+
+Command:
+
+pytest -v
+
+All tests must pass before proceeding.
+
+---
+
+### 5. DOCKER IMPLEMENTATION
+
+Create a production-appropriate Dockerfile.
+
+Requirements:
+
+- Use an official lightweight Python base image.
+- Install dependencies from requirements.txt.
+- Copy application source files.
+- Expose the appropriate application port.
+- Run Flask using a production WSGI server such as Gunicorn.
+- Avoid running the application as root where practical.
+- Optimize the image by avoiding unnecessary files.
+
+Create a .dockerignore file.
+
+The application must successfully build and run inside Docker.
+
+Expected commands:
+
+docker build -t autodeploy .
+docker run -p 5000:5000 autodeploy
+
+Verify the application through the browser and health endpoint.
+
+---
+
+### 6. GITHUB ACTIONS CI/CD PIPELINE
+
+This is the MOST IMPORTANT component.
+
+Create:
+
+.github/workflows/ci-cd.yml
+
+Implement an automated workflow with the following stages.
+
+**STAGE 1: TRIGGER**
+
+Trigger the workflow when:
+- Code is pushed to the main branch.
+- A pull request is created targeting main.
+
+**STAGE 2: CHECKOUT**
+
+- Use the official GitHub checkout action.
+- Download the latest repository code.
+
+**STAGE 3: PYTHON ENVIRONMENT**
+
+- Set up a compatible Python version.
+- Install project dependencies.
+- Install Pytest.
+
+**STAGE 4: AUTOMATED TESTING**
+
+- Execute pytest.
+- Display test results.
+- Stop the workflow if any test fails.
+
+**STAGE 5: DOCKER BUILD**
+
+For successful pushes to main:
+- Build the Docker image.
+- Tag the image appropriately.
+- Validate that the Docker image builds successfully.
+
+**STAGE 6: DEPLOYMENT**
+
+Configure deployment to Render.
+
+Requirements:
+- Deploy only after successful testing.
+- Deploy from the main branch.
+- Use secure GitHub repository secrets.
+- Never hardcode deployment credentials.
+- Ensure pull requests do not trigger production deployments.
+
+Choose the simplest reliable deployment strategy.
+
+Prefer Render's GitHub integration with automatic deployment after successful CI checks. If using a deployment hook, configure it securely through GitHub Actions secrets.
+
+IMPORTANT:
+Explain the difference between CI and CD in the implementation.
+
+Do not claim that Docker images are published to a registry unless an actual registry push is configured.
+
+---
+
+### 7. DEPLOYMENT CONFIGURATION
+
+Prepare the project for Render deployment.
+
+Requirements:
+- Configure the appropriate start command.
+- Bind the application to 0.0.0.0.
+- Read the port from the environment.
+- Include all production dependencies.
+- Document Render deployment configuration.
+
+The final application should be accessible through a public Render URL.
+
+If deployment requires manual account authorization or secret configuration, clearly explain those steps instead of pretending deployment has succeeded.
+
+---
+
+### 8. PROJECT STRUCTURE
+
+Maintain the following structure:
+
+AutoDeploy/
+│
+├── app.py
+├── requirements.txt
+├── Dockerfile
+├── .dockerignore
+├── render.yaml
+├── README.md
+│
+├── tests/
+│   ├── __init__.py
+│   └── test_app.py
+│
+└── .github/
+    └── workflows/
+        └── ci-cd.yml
+
+You may introduce additional files only when technically necessary.
+
+---
+
+### 9. DOCUMENTATION
+
+Create a comprehensive README.md containing:
+
+1. Project overview.
+2. Project objectives.
+3. Technology stack.
+4. Architecture explanation.
+5. CI/CD pipeline workflow.
+6. Project directory structure.
+7. Local installation instructions.
+8. How to run automated tests.
+9. How to build and run Docker.
+10. GitHub Actions configuration.
+11. Render deployment instructions.
+12. Environment variables and secrets.
+13. Screenshots section.
+14. Future improvements.
+
+Include the commands required to execute each stage.
+
+---
+
+### 10. VALIDATION AND QUALITY ASSURANCE
+
+Before declaring the project complete, verify:
+
+- Flask application starts successfully.
+- Homepage works.
+- Health API works.
+- All automated tests pass.
+- Docker image builds successfully.
+- Docker container starts successfully.
+- GitHub Actions YAML is valid.
+- GitHub Actions workflow is configured correctly.
+- Deployment configuration is correct.
+
+Identify and fix errors instead of simply documenting them.
+
+Do not fabricate successful test results, Docker builds, GitHub Actions executions, or cloud deployments.
+
+Clearly distinguish between:
+- Implemented.
+- Locally tested.
+- Successfully executed on GitHub.
+- Successfully deployed.
+
+---
+
+### 11. INTERVIEW PREPARATION
+
+After completing the project, create an additional file:
+
+INTERVIEW.md
+
+Explain:
+
+1. What is CI?
+2. What is CD?
+3. Difference between Continuous Delivery and Continuous Deployment.
+4. What is GitHub Actions?
+5. What is a GitHub Actions workflow?
+6. What are jobs, steps, and runners?
+7. What is Docker?
+8. What is a Dockerfile?
+9. What is Docker image vs container?
+10. Why is automated testing important?
+11. How does the pipeline detect failures?
+12. How does the deployment process work?
+13. Why are GitHub Secrets important?
+14. What happens when a developer pushes broken code?
+15. Explain the complete architecture and execution flow.
+
+Also provide:
+- A 60-second project explanation.
+- A 2-minute technical explanation.
+- 15 potential interview questions with answers.
+- Five practical troubleshooting scenarios.
+
+Keep explanations beginner-friendly but technically accurate.
+
+---
+
+### 12. DEVELOPMENT RULES
+
+Follow these instructions throughout development:
+
+1. Do not overengineer the application.
+2. Do not generate unnecessary dependencies.
+3. Do not use outdated GitHub Actions versions.
+4. Do not hardcode credentials.
+5. Do not skip testing.
+6. Do not claim unverified functionality works.
+7. Use clean, readable, maintainable code.
+8. Explain important configuration decisions.
+9. Keep the implementation achievable within two hours.
+10. Prefer official documentation and supported configurations.
+
+### 13. FINAL DELIVERABLES
+
+At completion, provide:
+
+- Fully functional Flask application.
+- Automated Pytest test suite.
+- Dockerfile and Docker configuration.
+- GitHub Actions CI/CD workflow.
+- Render deployment configuration.
+- README.md.
+- INTERVIEW.md.
+
+Finally, provide a concise completion report showing:
+
+| Component | Status |
+|---|---|
+| Flask Application | |
+| Automated Tests | |
+| Docker Build | |
+| GitHub Actions | |
+| CI Pipeline | |
+| CD Configuration | |
+| Render Deployment | |
+| Documentation | |
+
+Do not mark anything successful without verification.
+
+**FINAL OBJECTIVE: Build a working end-to-end CI/CD demonstration that I can confidently explain and showcase in a software development or DevOps internship interview.**
